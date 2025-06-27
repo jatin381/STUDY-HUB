@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Resource Hub</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>📚 Study Resource Hub</h1>
+    <p>Welcome! Access study materials, PDFs, videos & more.</p>
+  </header>
+
+  <nav>
+    <a href="#notes">PDF Notes</a>
+    <a href="#videos">Video Lectures</a>
+    <a href="#quizzes">Quizzes</a>
+  </nav>
+
+  <main>
+    <section id="notes">
+      <h2>📄 PDF Notes</h2>
+      <ul>
+        <li><a href="https://example.com/math.pdf" target="_blank">Math Notes</a></li>
+        <li><a href="https://example.com/science.pdf" target="_blank">Science Notes</a></li>
+        <li><a href="https://example.com/history.pdf" target="_blank">History Notes</a></li>
+      </ul>
+    </section>
+
+    <section id="videos">
+      <h2>🎥 Video Lectures</h2>
+      <ul>
+        <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">Algebra Basics</a></li>
+        <li><a href="https://www.youtube.com/watch?v=abc123" target="_blank">Photosynthesis</a></li>
+      </ul>
+    </section>
+
+    <section id="quizzes">
+      <h2>📝 Quizzes</h2>
+      <ul>
+        <li><a href="https://forms.gle/your-math-quiz" target="_blank">Math Quiz</a></li>
+        <li><a href="https://forms.gle/your-gk-quiz" target="_blank">GK Quiz</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Made by Jatin &copy; 2025</p>
+  </footer>
+</body>
+</html>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f4f8fb;
+  color: #333;
+}
+
+header {
+  background: #005792;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+nav {
+  background: #f0f0f0;
+  text-align: center;
+  padding: 10px;
+}
+
+nav a {
+  margin: 0 15px;
+  text-decoration: none;
+  color: #005792;
+  font-weight: bold;
+}
+
+main {
+  padding: 20px;
+}
+
+section {
+  margin-bottom: 30px;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul li a {
+  text-decoration: none;
+  color: #0077cc;
+}
+
+ul li a:hover {
+  text-decoration: underline;
+}
+
+footer {
+  background: #e0e0e0;
+  text-align: center;
+  padding: 10px;
+}
