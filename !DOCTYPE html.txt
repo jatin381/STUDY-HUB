@@ -4,103 +4,187 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Study Resource Hub</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #111111;
+      --primary: #005792;
+    }
+
+    body.dark {
+      --bg: #121212;
+      --text: #ffffff;
+      --primary: #4fc3f7;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header, footer {
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 1em;
+    }
+
+    nav {
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    nav input, nav select {
+      margin: 5px;
+      padding: 5px;
+    }
+
+    main {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    section {
+      margin: 30px 0;
+    }
+
+    ul {
+      padding: 0;
+      list-style: none;
+    }
+
+    li {
+      margin: 10px 0;
+    }
+
+    button {
+      padding: 10px;
+      margin: 5px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    input[type="file"] {
+      display: block;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      header, nav, main, footer {
+        padding: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1>📚 Study Resource Hub</h1>
-    <p>Welcome! Access study materials, PDFs, videos & more.</p>
+    <h1>Study Resource Hub</h1>
+    <p>Access notes, videos, quizzes & more</p>
+    <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    <button onclick="logout()" id="logoutBtn" style="display:none">Logout</button>
   </header>
 
   <nav>
-    <a href="#notes">PDF Notes</a>
-    <a href="#videos">Video Lectures</a>
-    <a href="#quizzes">Quizzes</a>
+    <input type="text" id="searchInput" placeholder="Search resources..." oninput="filterResources()" />
+    <select id="categoryFilter" onchange="filterResources()">
+      <option value="all">All</option>
+      <option value="math">Math</option>
+      <option value="science">Science</option>
+    </select>
   </nav>
 
   <main>
-    <section id="notes">
-      <h2>📄 PDF Notes</h2>
-      <ul>
-        <li><a href="https://example.com/math.pdf" target="_blank">Math Notes</a></li>
-        <li><a href="https://example.com/science.pdf" target="_blank">Science Notes</a></li>
-        <li><a href="https://example.com/history.pdf" target="_blank">History Notes</a></li>
-      </ul>
+    <section id="auth">
+      <button onclick="login()" id="loginBtn">Login with Google</button>
     </section>
 
-    <section id="videos">
-      <h2>🎥 Video Lectures</h2>
-      <ul>
-        <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">Algebra Basics</a></li>
-        <li><a href="https://www.youtube.com/watch?v=abc123" target="_blank">Photosynthesis</a></li>
-      </ul>
+    <section id="uploadSection" style="display:none">
+      <h2>Upload Notes (PDF)</h2>
+      <input type="file" id="noteFile" />
+      <button onclick="uploadNote()">Upload</button>
+      <p id="uploadStatus"></p>
     </section>
 
-    <section id="quizzes">
-      <h2>📝 Quizzes</h2>
-      <ul>
-        <li><a href="https://forms.gle/your-math-quiz" target="_blank">Math Quiz</a></li>
-        <li><a href="https://forms.gle/your-gk-quiz" target="_blank">GK Quiz</a></li>
+    <section>
+      <h2>Available Notes</h2>
+      <ul id="notesList">
+        <li data-category="math">📄 <a href="#">Math Notes</a></li>
+        <li data-category="science">📄 <a href="#">Science Notes</a></li>
       </ul>
     </section>
   </main>
 
   <footer>
-    <p>Made by Jatin &copy; 2025</p>
+    <p>&copy; 2025 Jatin's Study Hub</p>
   </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <script>
+    // === Your Firebase Config ===
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const storage = firebase.storage();
+
+    function login() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).then(() => {
+        document.getElementById('auth').style.display = 'none';
+        document.getElementById('uploadSection').style.display = 'block';
+        document.getElementById('logoutBtn').style.display = 'inline-block';
+      });
+    }
+
+    function logout() {
+      auth.signOut().then(() => location.reload());
+    }
+
+    function uploadNote() {
+      const file = document.getElementById('noteFile').files[0];
+      if (!file) return;
+      const storageRef = storage.ref('notes/' + file.name);
+      storageRef.put(file).then(snapshot => {
+        document.getElementById('uploadStatus').innerText = 'Uploaded successfully!';
+      });
+    }
+
+    function filterResources() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const category = document.getElementById('categoryFilter').value;
+      document.querySelectorAll('#notesList li').forEach(li => {
+        const text = li.innerText.toLowerCase();
+        const matchesSearch = text.includes(search);
+        const matchesCategory = category === 'all' || li.dataset.category === category;
+        li.style.display = (matchesSearch && matchesCategory) ? 'list-item' : 'none';
+      });
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById('auth').style.display = 'none';
+        document.getElementById('uploadSection').style.display = 'block';
+        document.getElementById('logoutBtn').style.display = 'inline-block';
+      }
+    });
+  </script>
 </body>
 </html>
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: #f4f8fb;
-  color: #333;
-}
-
-header {
-  background: #005792;
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-
-nav {
-  background: #f0f0f0;
-  text-align: center;
-  padding: 10px;
-}
-
-nav a {
-  margin: 0 15px;
-  text-decoration: none;
-  color: #005792;
-  font-weight: bold;
-}
-
-main {
-  padding: 20px;
-}
-
-section {
-  margin-bottom: 30px;
-}
-
-ul {
-  list-style-type: none;
-  padding-left: 0;
-}
-
-ul li a {
-  text-decoration: none;
-  color: #0077cc;
-}
-
-ul li a:hover {
-  text-decoration: underline;
-}
-
-footer {
-  background: #e0e0e0;
-  text-align: center;
-  padding: 10px;
-}
